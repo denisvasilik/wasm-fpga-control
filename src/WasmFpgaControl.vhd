@@ -42,18 +42,10 @@ architecture WasmFpgaControlArchitecture of WasmFpgaControl is
   signal LoaderState : std_logic_vector(7 downto 0);
   signal LoaderRun : std_logic;
   signal LoaderBusy : std_logic;
-  signal LoaderReadAddress : std_logic_vector(23 downto 0);
-  signal LoaderWriteAddress : std_logic_vector(23 downto 0);
-  signal LoaderReadData : std_logic_vector(31 downto 0);
-  signal LoaderWriteData : std_logic_vector(31 downto 0);
 
   signal EngineState : std_logic_vector(7 downto 0);
   signal EngineRun : std_logic;
   signal EngineBusy : std_logic;
-  signal EngineReadAddress : std_logic_vector(23 downto 0);
-  signal EngineWriteAddress : std_logic_vector(23 downto 0);
-  signal EngineReadData : std_logic_vector(31 downto 0);
-  signal EngineWriteData : std_logic_vector(31 downto 0);
 
   constant ControlStateIdle0 : std_logic_vector(7 downto 0) := x"00";
   constant ControlStateLoaderRun0 : std_logic_vector(7 downto 0) := x"01";
@@ -62,12 +54,11 @@ architecture WasmFpgaControlArchitecture of WasmFpgaControl is
   constant ControlStateEngineRun1 : std_logic_vector(7 downto 0) := x"04";
 
   constant LoaderStateIdle0 : std_logic_vector(7 downto 0) := x"00";
-  constant LoaderStateWriteCyc0 : std_logic_vector(7 downto 0) := x"01";
-  constant LoaderStateWriteAck0 : std_logic_vector(7 downto 0) := x"02";
+  constant LoaderStateLoad0 : std_logic_vector(7 downto 0) := x"01";
+  constant LoaderStateLoad1 : std_logic_vector(7 downto 0) := x"02";
 
   constant EngineStateIdle0 : std_logic_vector(7 downto 0) := x"00";
-  constant EngineStateReadCyc0 : std_logic_vector(7 downto 0) := x"01";
-  constant EngineStateReadAck0 : std_logic_vector(7 downto 0) := x"02";
+  constant EngineStateRun0 : std_logic_vector(7 downto 0) := x"01";
 
 begin
 
@@ -78,35 +69,25 @@ begin
     if (Rst = '1') then
       Busy <= '1';
       LoaderRun <= '0';
-      LoaderReadAddress <= (others => '0');
-      LoaderWriteAddress <= (others => '0');
-      LoaderWriteData <= (others => '0');
       EngineRun <= '0';
-      EngineReadAddress <= (others => '0');
-      EngineWriteAddress <= (others => '0');
-      EngineWriteData <= (others => '0');
       ControlState <= ControlStateIdle0;
     elsif rising_edge(Clk) then
       if (ControlState = ControlStateIdle0) then
         Busy <= '0';
         if (Run = '1') then
           Busy <= '1';
+          LoaderRun <= '1';
           ControlState <= ControlStateLoaderRun0;
         end if;
       elsif (ControlState = ControlStateLoaderRun0) then
-        LoaderWriteAddress <= WASMFPGALOADER_ADR_ControlReg;
-        LoaderWriteData <= (31 downto 1 => '0') & WASMFPGALOADER_VAL_DoRun;
-        LoaderRun <= '1';
+        LoaderRun <= '0';
         ControlState <= ControlStateLoaderRun1;
       elsif (ControlState = ControlStateLoaderRun1) then
-        LoaderRun <= '0';
         if (LoaderBusy ='0') then
+          EngineRun <= '1';
           ControlState <= ControlStateEngineRun0;
         end if;
       elsif (ControlState = ControlStateEngineRun0) then
-        EngineWriteAddress <= WASMFPGAENGINE_ADR_ControlReg;
-        EngineWriteData <= (31 downto 1 => '0') & WASMFPGAENGINE_VAL_DoRun;
-        EngineRun <= '1';
         ControlState <= ControlStateEngineRun1;
       elsif (ControlState = ControlStateEngineRun1) then
         EngineRun <= '0';
@@ -121,11 +102,12 @@ begin
   begin
     if (Rst = '1') then
       LoaderBusy <= '0';
-      LoaderReadData <= (others => '0');
       Loader_Cyc <= (others => '0');
       Loader_Stb <= '0';
-      Loader_Adr <= (others => '0');
+      Loader_We <= '0';
       Loader_Sel <= (others => '0');
+      Loader_Adr <= (others => '0');
+      Loader_DatOut <= (others => '0');
       LoaderState <= LoaderStateIdle0;
     elsif rising_edge(Clk) then
       if( LoaderState = LoaderStateIdle0 ) then
@@ -139,14 +121,28 @@ begin
           Loader_Cyc <= "1";
           Loader_Stb <= '1';
           Loader_We <= '1';
-          Loader_Adr <= LoaderWriteAddress;
-          Loader_DatOut <= LoaderWriteData;
           Loader_Sel <= (others => '1');
-          LoaderState <= LoaderStateWriteCyc0;
+          Loader_Adr <= WASMFPGALOADER_ADR_ControlReg;
+          Loader_DatOut <= (31 downto 1 => '0') & WASMFPGALOADER_VAL_DoRun;
+          LoaderState <= LoaderStateLoad0;
         end if;
-      elsif( LoaderState = LoaderStateWriteCyc0 ) then
+      --
+      -- Start module loading
+      --
+      elsif( LoaderState = LoaderStateLoad0 ) then
         if ( Loader_Ack = '1' ) then
-          LoaderState <= LoaderStateIdle0;
+          Loader_Adr <= WASMFPGALOADER_ADR_StatusReg;
+          Loader_We <= '0';
+          LoaderState <= LoaderStateLoad1;
+        end if;
+      --
+      -- Wait until module loading has been finished.
+      --
+      elsif( LoaderState = LoaderStateLoad1 ) then
+        if ( Loader_Ack = '1' ) then
+          if((Loader_DatIn and WASMFPGALOADER_BUS_MASK_Loaded) = WASMFPGALOADER_BUS_MASK_Loaded) then
+            LoaderState <= LoaderStateIdle0;
+          end if;
         end if;
       end if;
     end if;
@@ -156,11 +152,11 @@ begin
   begin
     if (Rst = '1') then
       EngineBusy <= '0';
-      EngineReadData <= (others => '0');
       Engine_Cyc <= (others => '0');
       Engine_Stb <= '0';
-      Engine_Adr <= (others => '0');
       Engine_Sel <= (others => '0');
+      Engine_Adr <= (others => '0');
+      Engine_DatOut <= (others => '0');
       EngineState <= EngineStateIdle0;
     elsif rising_edge(Clk) then
       if( EngineState = EngineStateIdle0 ) then
@@ -169,24 +165,20 @@ begin
         Engine_Stb <= '0';
         Engine_Adr <= (others => '0');
         Engine_Sel <= (others => '0');
-        if( LoaderRun = '1' ) then
+        if( EngineRun = '1' ) then
           EngineBusy <= '1';
           Engine_Cyc <= "1";
           Engine_Stb <= '1';
-          Engine_Adr <= "00" & LoaderReadAddress(23 downto 2);
           Engine_Sel <= (others => '1');
-          EngineState <= EngineStateReadCyc0;
+          Engine_We <= '1';
+          Engine_Adr <= WASMFPGAENGINE_ADR_ControlReg;
+          Engine_DatOut <= (31 downto 1 => '0') & WASMFPGAENGINE_VAL_DoRun;
+          EngineState <= EngineStateRun0;
         end if;
-      elsif( EngineState = EngineStateReadCyc0 ) then
+      elsif( EngineState = EngineStateRun0 ) then
         if ( Engine_Ack = '1' ) then
-          EngineReadData <= Engine_DatIn;
-          EngineState <= EngineStateReadAck0;
+          EngineState <= EngineStateIdle0;
         end if;
-      elsif( EngineState = EngineStateReadAck0 ) then
-        Engine_Cyc <= (others => '0');
-        Engine_Stb <= '0';
-        EngineBusy <= '0';
-        EngineState <= EngineStateIdle0;
       end if;
     end if;
   end process;
