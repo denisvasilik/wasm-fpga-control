@@ -37,32 +37,6 @@ architecture behavioural of tb_WasmFpgaControl is
       );
     end component;
 
-    component WasmFpgaControl
-      port (
-        Clk : in std_logic;
-        nRst : in std_logic;
-        Run : in std_logic;
-        Debug : in std_logic;
-        Busy : out std_logic;
-        Loader_Adr : out std_logic_vector(23 downto 0);
-        Loader_Sel : out std_logic_vector(3 downto 0);
-        Loader_DatIn: in std_logic_vector(31 downto 0);
-        Loader_We : out std_logic;
-        Loader_Stb : out std_logic;
-        Loader_Cyc : out std_logic_vector(0 downto 0);
-        Loader_DatOut : out std_logic_vector(31 downto 0);
-        Loader_Ack : in std_logic;
-        Engine_Adr : out std_logic_vector(23 downto 0);
-        Engine_Sel : out std_logic_vector(3 downto 0);
-        Engine_DatIn: in std_logic_vector(31 downto 0);
-        Engine_We : out std_logic;
-        Engine_Stb : out std_logic;
-        Engine_Cyc : out std_logic_vector(0 downto 0);
-        Engine_DatOut : out std_logic_vector(31 downto 0);
-        Engine_Ack : in std_logic
-	  );
-    end component;
-
 begin
 
 	nRst <= not Rst;
@@ -93,7 +67,7 @@ begin
             FileIO_WasmFpgaControl => FileIO_WasmFpgaControl
         );
 
-    WasmFpgaControl_i : WasmFpgaControl
+    WasmFpgaControl_i : entity work.WasmFpgaControl
         port map (
             Clk => Clk100M,
             nRst => nRst,
@@ -115,7 +89,15 @@ begin
             Engine_Stb => open,
             Engine_Cyc => open,
             Engine_DatOut => open,
-            Engine_Ack => '0'
+            Engine_Ack => '0',
+            Uart_Adr => open,
+            Uart_Sel => open,
+            Uart_DatIn => (others => '0'),
+            Uart_We => open,
+            Uart_Stb => open,
+            Uart_Cyc => open,
+            Uart_DatOut => open,
+            Uart_Ack => '0'
         );
 
 end;

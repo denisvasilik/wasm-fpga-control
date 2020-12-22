@@ -6,9 +6,10 @@ library work;
   use work.WasmFpgaControlPackage.all;
   use work.WasmFpgaLoaderWshBn_Package.all;
   use work.WasmFpgaEngineWshBn_Package.all;
+  use work.WasmFpgaUartWshBn_Package.all;
 
 entity WasmFpgaControl is
-    port ( 
+    port (
         Clk : in std_logic;
         nRst : in std_logic;
         Run : in std_logic;
@@ -29,7 +30,15 @@ entity WasmFpgaControl is
         Engine_Stb : out std_logic;
         Engine_Cyc : out std_logic_vector(0 downto 0);
         Engine_DatOut : out std_logic_vector(31 downto 0);
-        Engine_Ack : in std_logic
+        Engine_Ack : in std_logic;
+        Uart_Adr : out std_logic_vector(23 downto 0);
+        Uart_Sel : out std_logic_vector(3 downto 0);
+        Uart_DatIn: in std_logic_vector(31 downto 0);
+        Uart_We : out std_logic;
+        Uart_Stb : out std_logic;
+        Uart_Cyc : out std_logic_vector(0 downto 0);
+        Uart_DatOut : out std_logic_vector(31 downto 0);
+        Uart_Ack : in std_logic
     );
 end entity WasmFpgaControl;
 
@@ -47,6 +56,10 @@ architecture WasmFpgaControlArchitecture of WasmFpgaControl is
   signal EngineRun : std_logic;
   signal EngineBusy : std_logic;
 
+  signal UartState : std_logic_vector(7 downto 0);
+  signal UartRun : std_logic;
+  signal UartBusy : std_logic;
+
   constant ControlStateIdle0 : std_logic_vector(7 downto 0) := x"00";
   constant ControlStateLoaderRun0 : std_logic_vector(7 downto 0) := x"01";
   constant ControlStateLoaderRun1 : std_logic_vector(7 downto 0) := x"02";
@@ -60,6 +73,11 @@ architecture WasmFpgaControlArchitecture of WasmFpgaControl is
   constant EngineStateIdle0 : std_logic_vector(7 downto 0) := x"00";
   constant EngineStateRun0 : std_logic_vector(7 downto 0) := x"01";
 
+  constant UartStateIdle0 : std_logic_vector(7 downto 0) := x"00";
+  constant UartStateRun0 : std_logic_vector(7 downto 0) := x"01";
+  constant UartStateRun1 : std_logic_vector(7 downto 0) := x"02";
+  constant UartStateRun2 : std_logic_vector(7 downto 0) := x"03";
+
 begin
 
   Rst <= not nRst;
@@ -70,6 +88,7 @@ begin
       Busy <= '1';
       LoaderRun <= '0';
       EngineRun <= '0';
+      UartRun <= '0';
       ControlState <= ControlStateIdle0;
     elsif rising_edge(Clk) then
       if (ControlState = ControlStateIdle0) then
@@ -77,10 +96,12 @@ begin
         if (Run = '1') then
           Busy <= '1';
           LoaderRun <= '1';
+          UartRun <= '1';
           ControlState <= ControlStateLoaderRun0;
         end if;
       elsif (ControlState = ControlStateLoaderRun0) then
         LoaderRun <= '0';
+        UartRun <= '0';
         ControlState <= ControlStateLoaderRun1;
       elsif (ControlState = ControlStateLoaderRun1) then
         if (LoaderBusy ='0') then
@@ -155,6 +176,7 @@ begin
       Engine_Cyc <= (others => '0');
       Engine_Stb <= '0';
       Engine_Sel <= (others => '0');
+      Engine_We <= '0';
       Engine_Adr <= (others => '0');
       Engine_DatOut <= (others => '0');
       EngineState <= EngineStateIdle0;
@@ -178,6 +200,66 @@ begin
       elsif( EngineState = EngineStateRun0 ) then
         if ( Engine_Ack = '1' ) then
           EngineState <= EngineStateIdle0;
+        end if;
+      end if;
+    end if;
+  end process;
+
+-- UARTBLK_ADR_TxDataReg
+
+        --   Uart_Adr <= ;
+        --
+
+  Uart : process (Clk, Rst) is
+  begin
+    if (Rst = '1') then
+      UartBusy <= '0';
+      Uart_Cyc <= (others => '0');
+      Uart_Stb <= '0';
+      Uart_Sel <= (others => '0');
+      Uart_Adr <= (others => '0');
+      Uart_DatOut <= (others => '0');
+      UartState <= UartStateIdle0;
+    elsif rising_edge(Clk) then
+      if( UartState = UartStateIdle0 ) then
+        UartBusy <= '0';
+        Uart_Cyc <= (others => '0');
+        Uart_Stb <= '0';
+        Uart_Adr <= (others => '0');
+        Uart_Sel <= (others => '0');
+        if( UartRun = '1' ) then
+          UartBusy <= '1';
+          Uart_Cyc <= "1";
+          Uart_Stb <= '1';
+          Uart_Sel <= (others => '1');
+          Uart_We <= '1';
+          Uart_Adr <= WASMFPGAUART_ADR_TxDataReg;
+          Uart_DatOut <= (31 downto 8 => '0') & x"41";
+          UartState <= UartStateRun0;
+        end if;
+      elsif( UartState = UartStateRun0 ) then
+        if ( Uart_Ack = '1' ) then
+          Uart_Cyc <= (others => '0');
+          Uart_Stb <= '0';
+          Uart_Adr <= (others => '0');
+          Uart_Sel <= (others => '0');
+          UartState <= UartStateRun1;
+        end if;
+      elsif( UartState = UartStateRun1 ) then
+          Uart_Cyc <= "1";
+          Uart_Stb <= '1';
+          Uart_Sel <= (others => '1');
+          Uart_We <= '1';
+          Uart_Adr <= WASMFPGAUART_ADR_ControlReg;
+          Uart_DatOut <= (31 downto 1 => '0') & WASMFPGAUART_VAL_TxDoRun;
+          UartState <= UartStateRun2;
+      elsif( UartState = UartStateRun2 ) then
+        if ( Uart_Ack = '1' ) then
+          Uart_Cyc <= (others => '0');
+          Uart_Stb <= '0';
+          Uart_Adr <= (others => '0');
+          Uart_Sel <= (others => '0');
+          UartState <= UartStateIdle0;
         end if;
       end if;
     end if;

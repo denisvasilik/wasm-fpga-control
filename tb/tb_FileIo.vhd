@@ -156,6 +156,9 @@ begin
 
     begin  -- process Read_file
 
+    FileIO_WasmFpgaControl.Run <= '1';
+    FileIO_WasmFpgaControl.Debug <= '0';
+
         -----------------------------------------------------------------------
         --           Stimulus file instruction definition
         --  This is where the instructions used in the stimulus file are defined.
@@ -809,7 +812,7 @@ begin
             --  par2  1  signal value
             elsif (instruction(1 to len) = "SET_SIG") then
                 if (par1 = 16) then
- 
+
                 else
                     assert (false)
                     report " Line " & (integer'image(file_line)) & ", " & instruction(1 to len) & ": Signal not defined"
