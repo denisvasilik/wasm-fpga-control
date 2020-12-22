@@ -39,6 +39,7 @@ setuptools.setup(
             [
                 "resources/wasm_fpga_loader_header.vhd",
                 "resources/wasm_fpga_engine_header.vhd",
+                "resources/wasm_fpga_uart_header.vhd",
             ],
         ),
         ("wasm-fpga-control/src",
