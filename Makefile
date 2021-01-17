@@ -22,8 +22,6 @@ fetch-definitions:
 	resources/wasm_fpga_loader_header.vhd
 	cp ../wasm-fpga-engine/resources/wasm_fpga_engine_header.vhd \
 	resources/wasm_fpga_engine_header.vhd
-	cp ../wasm-fpga-uart/resources/wasm_fpga_uart_header.vhd \
-	resources/wasm_fpga_uart_header.vhd
 
 install-from-test-pypi:
 	pip3 install --upgrade -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple wasm-fpga-control

@@ -89,15 +89,7 @@ begin
             Engine_Stb => open,
             Engine_Cyc => open,
             Engine_DatOut => open,
-            Engine_Ack => '0',
-            Uart_Adr => open,
-            Uart_Sel => open,
-            Uart_DatIn => (others => '0'),
-            Uart_We => open,
-            Uart_Stb => open,
-            Uart_Cyc => open,
-            Uart_DatOut => open,
-            Uart_Ack => '0'
+            Engine_Ack => '0'
         );
 
 end;

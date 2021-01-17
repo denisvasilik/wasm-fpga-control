@@ -62,7 +62,6 @@ set files_vhd [list \
  [file normalize "${project_src}/WasmFpgaControlPackage.vhd" ]\
  [file normalize "${project_resources}/wasm_fpga_loader_header.vhd" ]\
  [file normalize "${project_resources}/wasm_fpga_engine_header.vhd" ]\
- [file normalize "${project_resources}/wasm_fpga_uart_header.vhd" ]\
  [file normalize "${project_package}/component.xml" ]\
 ]
 add_files -norecurse -fileset $obj $files_vhd
