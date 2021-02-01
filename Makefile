@@ -5,6 +5,9 @@ all: package
 prepare:
 	@mkdir -p work
 
+hxs: fetch-definitions
+
+
 project: prepare fetch-definitions
 	@vivado -mode batch -source scripts/create_project.tcl -notrace -nojournal -tempDir work -log work/vivado.log
 
