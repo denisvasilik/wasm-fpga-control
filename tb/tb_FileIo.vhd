@@ -157,7 +157,6 @@ begin
     begin  -- process Read_file
 
     FileIO_WasmFpgaControl.Run <= '1';
-    FileIO_WasmFpgaControl.Debug <= '0';
 
         -----------------------------------------------------------------------
         --           Stimulus file instruction definition

@@ -257,7 +257,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>d5dfaf9c</spirit:value>
+            <spirit:value>fd30439e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -278,7 +278,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>1e0c4e1c</spirit:value>
+            <spirit:value>1636fdcc</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -299,7 +299,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>1e0c4e1c</spirit:value>
+            <spirit:value>1636fdcc</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -333,19 +333,6 @@
       </spirit:port>
       <spirit:port>
         <spirit:name>Run</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>Debug</spirit:name>
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:wireTypeDefs>
@@ -693,7 +680,7 @@
       <spirit:file>
         <spirit:name>../src/WasmFpgaControl.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_7c26f509</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_54145fa2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -773,8 +760,8 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>WebAssembly Control IP</xilinx:displayName>
-      <xilinx:coreRevision>29</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-01-17T09:29:01Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>30</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-02-01T19:40:44Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@12a526c9_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@761a2743_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
@@ -871,13 +858,24 @@
         <xilinx:tag xilinx:name="ui.data.coregen.dd@34bc8f2d_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@55c2f740_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@27629e70_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6edc8e24_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2a5bbb24_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@11e3d59d_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@57e344ad_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6e93f25e_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@fc98111_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4d86ffe3_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@760e998b_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@63fc1511_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2bfcbd27_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@23d19ceb_ARCHIVE_LOCATION">/home/ubuntu-dev/git/webassembly/wasm-fpga-control/package</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2019.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="48a704ec"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="5d38dec4"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="388cd8f8"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="90d3ef42"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="e7d74453"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="c35c5fd6"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>

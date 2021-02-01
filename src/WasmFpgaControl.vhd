@@ -12,7 +12,6 @@ entity WasmFpgaControl is
         Clk : in std_logic;
         nRst : in std_logic;
         Run : in std_logic;
-        Debug : in std_logic;
         Busy : out std_logic;
         Loader_Adr : out std_logic_vector(23 downto 0);
         Loader_Sel : out std_logic_vector(3 downto 0);

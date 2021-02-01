@@ -24,19 +24,6 @@ architecture behavioural of tb_WasmFpgaControl is
     signal WasmFpgaControl_FileIO : T_WasmFpgaControl_FileIO;
     signal FileIO_WasmFpgaControl : T_FileIO_WasmFpgaControl;
 
-    component tb_FileIO is
-      generic (
-        stimulus_path: in string;
-        stimulus_file: in string
-      );
-      port (
-        Clk : in std_logic;
-        Rst : in std_logic;
-        WasmFpgaControl_FileIO : in T_WasmFpgaControl_FileIO;
-        FileIO_WasmFpgaControl : out T_FileIO_WasmFpgaControl
-      );
-    end component;
-
 begin
 
 	nRst <= not Rst;
@@ -55,7 +42,7 @@ begin
         wait;
     end process;
 
-    tb_FileIO_i : tb_FileIO
+    tb_FileIO_i : entity work.tb_FileIO
         generic map (
             stimulus_path => stimulus_path,
             stimulus_file => stimulus_file
@@ -72,7 +59,6 @@ begin
             Clk => Clk100M,
             nRst => nRst,
             Run => FileIO_WasmFpgaControl.Run,
-            Debug => FileIO_WasmFpgaControl.Debug,
             Busy => WasmFpgaControl_FileIO.Busy,
             Loader_Adr => open,
             Loader_Sel => open,
