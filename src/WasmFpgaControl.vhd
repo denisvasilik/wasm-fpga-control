@@ -81,6 +81,7 @@ begin
       if (ControlState = ControlStateIdle0) then
         Busy <= '0';
         if (Run = '1') then
+          LoaderRun <= '1';
           Busy <= '1';
           ControlState <= ControlStateLoaderRun0;
         end if;
